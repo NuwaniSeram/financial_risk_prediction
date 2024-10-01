@@ -2,16 +2,17 @@ from flask import Flask, request, jsonify
 import joblib
 import numpy as np
 from input_preprocessing import preprocess_user_input
-from model import load_model
+from model import load_model, load_scaler
 import pandas as pd
 
 app = Flask(__name__)
 
-# Load the trained model
+# Load the model and scaler
 model = load_model()
+scaler = load_scaler()
 
 # Define columns expected by the model (dummy columns after preprocessing)
-dummy_columns = ['Age', 'Income', 'Credit Score', 'Loan Amount', 'Years at Current Job', 
+columns = ['Age', 'Income', 'Credit Score', 'Loan Amount', 'Years at Current Job', 
     'Debt-to-Income Ratio', 'Assets Value', 'Number of Dependents',
     'Previous Defaults', 'Marital Status Change', 'Gender_Female',
     'Gender_Male', 'Gender_Non-binary', 'Education Level_Bachelor\'s',
@@ -33,20 +34,21 @@ def predict():
     data = request.json
     try:
         # Preprocess the user input
-        processed_data = preprocess_user_input(data, dummy_columns)
-        
-        # Predict financial risk using the trained model
-        prediction = model.predict(processed_data)
-        
-        # Define the result based on the prediction output
-        result = "Approved" if prediction[0] == 0 else "Not Approved"
+        preprocessed_input = preprocess_user_input(data, columns, scaler)
+
+        # Make prediction
+        prediction = model.predict(preprocessed_input)
+
+        # Convert the prediction to risk level
+        risk_mapping = {1: 'low', 2: 'medium', 3: 'high'}
+        risk_level = risk_mapping.get(prediction[0], 'unknown')
         
         return jsonify({
-            'status': result,
-            'risk': int(prediction[0])  # 0 for low risk, 1 for high risk (example)
+            'status': 'success',
+            'risk': risk_level
         })
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'status': 'error', 'message': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
