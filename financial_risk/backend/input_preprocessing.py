@@ -3,6 +3,9 @@ import pycountry_convert as pc
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
+import joblib
+
+scaler = joblib.load('../scaler.pkl')
 
 # Function to convert country to continent
 def country_to_continent(country_name):
@@ -23,7 +26,7 @@ def country_to_continent(country_name):
         return 'Unknown'
 
 # Sample function to preprocess user input for prediction
-def preprocess_user_input(user_input, columns):
+def preprocess_user_input(user_input, columns,scaler):
     # 1. Convert country to continent
     user_input['Continent'] = country_to_continent(user_input['country'])
     del user_input['country']  # Remove country as it's no longer needed
@@ -42,7 +45,7 @@ def preprocess_user_input(user_input, columns):
 
     # Reorder the columns to match the training data
     input_df = input_df[columns]
-    scaler = MinMaxScaler()
+  
     # 5. Normalize the numerical columns (using the same scaler used during training)
     scaled_input = scaler.transform(input_df)
     
