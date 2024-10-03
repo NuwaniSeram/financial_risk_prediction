@@ -13,7 +13,7 @@ CORS(app)
 model = load_model()
 scaler = load_scaler()
 
-# Define columns expected by the model (dummy columns after preprocessing)
+
 dummy_columns = ['Age', 'Income', 'Credit Score', 'Loan Amount', 'Years at Current Job', 
     'Debt-to-Income Ratio', 'Assets Value', 'Number of Dependents',
     'Previous Defaults', 'Marital Status Change', 'Gender_Female',
@@ -30,29 +30,27 @@ dummy_columns = ['Age', 'Income', 'Credit Score', 'Loan Amount', 'Years at Curre
     'Continent_Europe', 'Continent_North America', 'Continent_Oceania',
     'Continent_South America', 'Continent_Unknown']
 
-# Define reverse mapping for Risk Rating
 
 
-# Route for prediction
+
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
     try:
-        # Preprocess the user input
+       
         processed_data = preprocess_user_input(data, dummy_columns,scaler)
         
-        # Predict financial risk using the trained model
+       
         prediction = model.predict(processed_data)
         
-        # Get the risk rating (predicted value)
+       
         predicted_risk = int(prediction[0])
         
         reverse_risk_mapping = {1: 'Low', 2: 'Medium', 3: 'High'}
         
-        # Map the numeric prediction back to categorical Risk Rating
         risk_category = reverse_risk_mapping.get(prediction[0],'unknown')
         
-        # Define the result based on the prediction output
+        
         result = {
             'Low': 'Approved',
             'Medium': 'Requires Further Review',
@@ -61,7 +59,7 @@ def predict():
         
         return jsonify({
             'status': result,
-            'risk': risk_category  # Returning 'Low', 'Medium', or 'High'
+            'risk': risk_category  
         })
     except Exception as e:
         return jsonify({'error': str(e)})
