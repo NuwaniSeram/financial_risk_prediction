@@ -76,6 +76,7 @@ const countryList = ['Cyprus', 'Luxembourg', 'Uganda', 'French Guiana', 'Tonga',
     const [isModalVisible, setIsModalVisible] = useState(false);
   
     const handleFormSubmit = async () => {
+      console.log(formData); 
       try {
         const response = await axios.post('http://localhost:5001/predict', formData);
         setPredictionResult(response.data);

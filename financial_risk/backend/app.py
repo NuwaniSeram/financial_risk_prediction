@@ -37,32 +37,42 @@ dummy_columns = ['Age', 'Income', 'Credit Score', 'Loan Amount', 'Years at Curre
 def predict():
     data = request.json
     try:
-       
-        processed_data = preprocess_user_input(data, dummy_columns,scaler)
-        
-       
+        # Preprocess the user input
+        processed_data = preprocess_user_input(data, dummy_columns, scaler)
+
+        # Predict financial risk using the trained model (probabilities)
+        prediction_probs = model.predict_proba(processed_data)
+        print("Prediction probabilities:", prediction_probs)
+        print(f"Received Data: {data}")  # Check received data
+       # Proceed with your preprocessing
+    
+        print(f"Preprocessed Data: {processed_data}")  # Check the data after preprocessing
+
+        # Predict the class with the highest probability
         prediction = model.predict(processed_data)
-        
-       
+
+        # Get the risk rating (predicted value)
         predicted_risk = int(prediction[0])
-        
+
         reverse_risk_mapping = {1: 'Low', 2: 'Medium', 3: 'High'}
-        
-        risk_category = reverse_risk_mapping.get(prediction[0],'unknown')
-        
-        
+
+        # Map the numeric prediction back to categorical Risk Rating
+        risk_category = reverse_risk_mapping.get(prediction[0], 'unknown')
+
+        # Define the result based on the prediction output
         result = {
             'Low': 'Approved',
             'Medium': 'Requires Further Review',
             'High': 'Not Approved'
         }[risk_category]
-        
+
         return jsonify({
             'status': result,
-            'risk': risk_category  
+            'risk': risk_category  # Returning 'Low', 'Medium', or 'High'
         })
     except Exception as e:
         return jsonify({'error': str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

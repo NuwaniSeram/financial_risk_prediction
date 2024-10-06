@@ -40,6 +40,8 @@ def preprocess_user_input(user_input, columns,scaler):
 
     
     input_df = input_df[columns]
+    
+    print("Preprocessed data:", input_df)
   
     
     scaled_input = scaler.transform(input_df)
