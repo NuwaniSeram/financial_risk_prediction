@@ -5,8 +5,6 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import joblib
 
-scaler = joblib.load('../scaler.pkl')
-
 # Function to convert country to continent
 def country_to_continent(country_name):
     try:
@@ -30,7 +28,6 @@ def preprocess_user_input(user_input, columns,scaler):
     #  Convert country to continent
     user_input['Continent'] = country_to_continent(user_input['country'])
     del user_input['country'] 
-
     
     input_df = pd.DataFrame([user_input])
 
